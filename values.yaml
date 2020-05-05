@@ -287,6 +287,9 @@ nginx:
   affinity: {}
   ## Additional deployment annotations
   podAnnotations: {}
+  auth:
+    enabled: false
+    server: ""
 
 portal:
   image:

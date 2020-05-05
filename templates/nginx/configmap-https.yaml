@@ -108,6 +108,18 @@ data:
         add_header X-Frame-Options DENY;
         add_header Content-Security-Policy "frame-ancestors 'none'";
 
+        {{- if .Values.nginx.auth.enabled }}
+        auth_request /auth;
+
+        location = /auth {
+          internal;
+          proxy_pass              {{ .Values.nginx.auth.server }};
+          proxy_pass_request_body off;
+          proxy_set_header        Content-Length "";
+          proxy_set_header        X-Original-URI $request_uri;
+        }
+        {{- end }}
+
         location / {
           proxy_pass http://portal/;
           proxy_set_header Host $http_host;
