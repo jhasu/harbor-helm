@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "harbor.tanzunet" . }}"
+  labels:
+{{ include "harbor.labels" . | indent 4 }}
+    component: tanzunet
+spec:
+  replicas: {{ .Values.tanzunet.replicas }}
+  selector:
+    matchLabels:
+{{ include "harbor.matchLabels" . | indent 6 }}
+      component: tanzunet
+  template:
+    metadata:
+      labels:
+{{ include "harbor.matchLabels" . | indent 8 }}
+        component: tanzunet
+      annotations:
+{{- if .Values.tanzunet.podAnnotations }}
+{{ toYaml .Values.tanzunet.podAnnotations | indent 8 }}
+{{- end }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.tanzunet.image.pullSecretName }}
+      containers:
+      - name: tanzunet
+        image: {{ .Values.tanzunet.image.repository }}:{{ .Values.tanzunet.image.tag }}
+        imagePullPolicy: Always
+        livenessProbe:
+          tcpSocket:
+            port: 8090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8090
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        env:
+        - name: INSECURE_SKIP_VERIFY
+          value: "{{ .Values.tanzunet.insecureSkipVerify }}"
+        - name: DB_HOST
+          value: {{ .Values.database.external.host }}
+        - name: DB_USERNAME
+          value: {{ .Values.database.external.username }}
+        - name: DB_PASSWORD
+          value: {{ .Values.database.external.password }}
+        - name: AUTH_SERVER_URL
+          value: {{ .Values.tanzunet.authServer.url }}
+        - name: AUTH_SERVER_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.tanzunet.authServer.signingKeySecretName }}
+              key: signingKey
+        - name: REGISTRY_URL
+          value: {{ .Values.externalURL }}
+        - name: REGISTRY_ADMIN_USER
+          value: admin
+        - name: REGISTRY_ADMIN_PASSWORD
+          value: {{ .Values.harborAdminPassword }}
+        - name: REGISTRY_CERT
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.core.secretName }}
+              name: {{ .Values.core.secretName }}
+              {{- else }}
+              name: {{ template "harbor.core" . }}
+              {{- end }}
+              key: tls.crt
+        ports:
+        - containerPort: 8090
+{{- if .Values.tanzunet.resources }}
+        resources:
+{{ toYaml .Values.tanzunet.resources | indent 10 }}
+{{- end }}
+    {{- with .Values.tanzunet.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tanzunet.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tanzunet.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

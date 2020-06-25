@@ -581,3 +581,7 @@ postgres://{{ template "harbor.database.username" . }}:{{ template "harbor.datab
     {{- include "harbor.nginx" . -}}
   {{- end -}}
 {{- end -}}
+
+{{- define "harbor.tanzunet" -}}
+  {{- printf "%s-tanzunet" (include "harbor.fullname" .) -}}
+{{- end -}}

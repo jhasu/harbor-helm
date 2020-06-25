@@ -741,3 +741,12 @@ redis:
     password: ""
   ## Additional deployment annotations
   podAnnotations: {}
+
+tanzunet:
+  image:
+    repository: dev.registry.pivotal.io/pivnet-registry/middleware
+    tag: latest
+    pullSecretName: ""
+  authServer:
+    url: ""
+    signingKeySecretName: ""
