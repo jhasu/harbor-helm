@@ -743,6 +743,7 @@ redis:
   podAnnotations: {}
 
 tanzunet:
+  enabled: false
   image:
     repository: dev.registry.pivotal.io/pivnet-registry/middleware
     tag: latest
