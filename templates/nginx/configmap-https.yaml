@@ -36,9 +36,11 @@ data:
         server "{{ template "harbor.portal" . }}:{{ template "harbor.portal.servicePort" . }}";
       }
 
+      {{- if .Values.tanzunet.enabled }}
       upstream middleware {
         server {{ template "harbor.tanzunet" . }};
       }
+      {{- end }}
 
       {{- if .Values.notary.enabled }}
       upstream notary-server {
@@ -185,6 +187,7 @@ data:
           return 404;
         }
 
+        {{- if .Values.tanzunet.enabled }}
         location /v2/ {
           proxy_pass {{ $scheme }}://middleware/v2/;
           proxy_set_header Host $http_host;
@@ -198,6 +201,9 @@ data:
         }
 
         location /core/v2/ {
+        {{- else }}
+        location /v2/ {
+        {{- end }}
           proxy_pass {{ $scheme }}://core/v2/;
           proxy_set_header Host $http_host;
           proxy_set_header X-Real-IP $remote_addr;
