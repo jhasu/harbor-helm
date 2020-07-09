@@ -42,7 +42,7 @@ spec:
         - name: INSECURE_SKIP_VERIFY
           value: "{{ .Values.tanzunet.insecureSkipVerify }}"
         - name: DB_HOST
-          value: {{ .Values.database.external.host }}
+          value: {{ default .Values.database.external.host .Values.tanzunet.database.host }}
         - name: DB_USERNAME
           value: {{ .Values.database.external.username }}
         - name: DB_PASSWORD
