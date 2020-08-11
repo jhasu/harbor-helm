@@ -753,3 +753,8 @@ tanzunet:
     signingKeySecretName: ""
   database:
     host: ""
+  metrics:
+    server:
+      url: ""
+      source: ""
+      tokenSecretName: ""
