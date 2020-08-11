@@ -69,6 +69,15 @@ spec:
               name: {{ template "harbor.core" . }}
               {{- end }}
               key: tls.crt
+        - name: METRICS_SERVER_URL
+          value: {{ .Values.tanzunet.metrics.server.url }}
+        - name: METRICS_SERVER_SOURCE
+          value: {{ .Values.tanzunet.metrics.server.source }}
+        - name: METRICS_SERVER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.tanzunet.metrics.server.tokenSecretName }}
+              key: token
         ports:
         - containerPort: 8090
 {{- if .Values.tanzunet.resources }}
