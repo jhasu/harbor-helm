@@ -25,6 +25,7 @@ spec:
 {{- end }}
     spec:
       securityContext:
+        runAsUser: 999
         fsGroup: 999
 {{- if .Values.redis.internal.serviceAccountName }}
       serviceAccountName: {{ .Values.redis.internal.serviceAccountName }}
@@ -33,6 +34,8 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      automountServiceAccountToken: {{ .Values.redis.internal.automountServiceAccountToken | default false }}
+      terminationGracePeriodSeconds: 120
       containers:
       - name: redis
         image: {{ .Values.redis.internal.image.repository }}:{{ .Values.redis.internal.image.tag }}
@@ -76,6 +79,9 @@ spec:
     {{- with .Values.redis.internal.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- if .Values.redis.internal.priorityClassName }}
+      priorityClassName: {{ .Values.redis.internal.priorityClassName }}
     {{- end }}
   {{- if and .Values.persistence.enabled (not $redis.existingClaim) }}
   volumeClaimTemplates:

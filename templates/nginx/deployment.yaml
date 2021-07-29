@@ -34,11 +34,13 @@ spec:
       serviceAccountName: {{ .Values.nginx.serviceAccountName }}
 {{- end }}
       securityContext:
+        runAsUser: 10000
         fsGroup: 10000
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      automountServiceAccountToken: {{ .Values.nginx.automountServiceAccountToken | default false }}
       containers:
       - name: nginx
         image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
@@ -99,5 +101,8 @@ spec:
     {{- with .Values.nginx.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- if .Values.nginx.priorityClassName }}
+      priorityClassName: {{ .Values.nginx.priorityClassName }}
     {{- end }}
 {{- end }}
