@@ -745,8 +745,8 @@ redis:
 tanzunet:
   enabled: false
   image:
-    repository: dev.registry.pivotal.io/pivnet-registry/middleware
-    tag: latest
+    repository: dev.registry.pivotal.io/jhasu/middleware
+    tag: 1.0.0
     pullSecretName: ""
   authServer:
     url: ""
